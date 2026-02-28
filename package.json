@@ -2,7 +2,6 @@
   "name": "DeltA Digivast Backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "start": "node dist/server.js",
     "build": "prisma generate && tsup src/server.ts --format esm --platform node --target node20 --outDir api --external pg-native",
