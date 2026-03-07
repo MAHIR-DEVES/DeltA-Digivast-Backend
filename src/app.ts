@@ -2,12 +2,19 @@ import express, { Application, Request, Response } from 'express';
 import { IndexRoutes } from './app/routes';
 import { globalErrorHandler } from './app/middleware/golbelErrorHandler';
 import { notFound } from './app/middleware/notFound';
+import cors from 'cors';
 
 const app: Application = express();
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  }),
+);
 
 app.use('/api/v1', IndexRoutes);
 

@@ -25,6 +25,7 @@
     "@types/express": "^5.0.6",
     "@types/node": "^25.3.2",
     "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "http-status": "^2.1.0",
@@ -37,6 +38,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/bcrypt": "^6.0.0",
+    "@types/cors": "^2.8.19",
     "@types/jsonwebtoken": "^9.0.10",
     "eslint": "^10.0.2",
     "tsup": "^8.5.1",

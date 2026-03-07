@@ -17,3 +17,9 @@ enum Designation {
   WEB_DEVELOPER
   UI_UX_DESIGNER
 }
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}

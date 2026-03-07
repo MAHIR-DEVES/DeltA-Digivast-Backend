@@ -70,6 +70,7 @@ const loginUser = async (payload: ILoginUser) => {
   const token = jwt.sign(
     {
       id: user.id,
+      employeeId: user.employeeId,
       email: user.email,
       role: user.role,
       name: user.name,
@@ -98,6 +99,41 @@ const getAllUsers = async (): Promise<User[]> => {
   const users = await prisma.user.findMany();
   return users;
 };
+const getSingleUser = async (id: string): Promise<User | null> => {
+  return await prisma.user.findUnique({
+    where: { id },
+  });
+};
+
+const updateUser = async (
+  id: string,
+  payload: Partial<IRegisterUser>,
+): Promise<User> => {
+  if (payload.password) {
+    payload.password = await bcrypt.hash(payload.password, 10);
+  }
+
+  return await prisma.user.update({
+    where: { id },
+    data: payload,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      photoUrl: true,
+      role: true,
+      designation: true,
+      skills: true,
+      experience: true,
+      department: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true,
+      lastLogin: true,
+    },
+  });
+};
 
 const deleteUser = async (id: string): Promise<User> => {
   const user = await prisma.user.delete({
@@ -111,4 +147,6 @@ export const UseService = {
   deleteUser,
   getAllUsers,
   loginUser,
+  getSingleUser,
+  updateUser,
 };

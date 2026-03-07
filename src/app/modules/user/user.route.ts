@@ -5,9 +5,19 @@ import { Role } from '../../../generated/prisma/enums';
 
 const router = Router();
 
-router.post('/', auth(Role.ADMIN), UserController.registerUser);
+router.post('/', UserController.registerUser);
 router.post('/login', UserController.loginUser);
 router.get('/', auth(Role.ADMIN, Role.MANAGER), UserController.getAllUsers);
+router.get(
+  '/:id',
+  auth(Role.ADMIN, Role.MANAGER),
+  UserController.getSingleUser,
+); // Single user
+router.put(
+  '/:id',
+  auth(Role.EMPLOY, Role.ADMIN, Role.MANAGER),
+  UserController.updateUser,
+); // Update user
 router.delete('/:id', auth(Role.ADMIN), UserController.deleteUser);
 
 export const UserRoute = router;

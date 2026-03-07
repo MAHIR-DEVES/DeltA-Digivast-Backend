@@ -1,0 +1,10 @@
+model Portfolio {
+  id          String   @id @default(uuid())
+  title       String
+  category    String
+  description String
+  imageUrl    String?
+  videoUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

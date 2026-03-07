@@ -37,6 +37,29 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getSingleUser = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await UseService.getSingleUser(id as string);
+  sendResponse(res, {
+    httpStatusCode: 200,
+    success: true,
+    message: 'user fetched successfully',
+    data: result,
+  });
+});
+
+const updateUser = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const payload = req.body;
+  const result = await UseService.updateUser(id as string, payload);
+  sendResponse(res, {
+    httpStatusCode: 200,
+    success: true,
+    message: 'user updated successfully',
+    data: result,
+  });
+});
+
 const deleteUser = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await UseService.deleteUser(id as string);
@@ -53,4 +76,6 @@ export const UserController = {
   getAllUsers,
   deleteUser,
   loginUser,
+  getSingleUser,
+  updateUser,
 };
