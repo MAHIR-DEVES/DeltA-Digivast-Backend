@@ -37,6 +37,15 @@ var globalErrorHandler = (err, req, res, next) => {
   });
 };
 
+// src/app/middleware/notFound.ts
+import status2 from "http-status";
+var notFound = (req, res) => {
+  res.status(status2.NOT_FOUND).json({
+    success: false,
+    message: `Route ${req.originalUrl} not found`
+  });
+};
+
 // src/app.ts
 import cors from "cors";
 
@@ -822,7 +831,7 @@ var createCourse = async (payload) => {
   });
 };
 var getAllCourses = async (query) => {
-  const { page = 1, limit = 10, category, status: status2 } = query;
+  const { page = 1, limit = 10, category, status: status3 } = query;
   const skip = (Number(page) - 1) * Number(limit);
   const whereCondition = {};
   if (category) {
@@ -831,8 +840,8 @@ var getAllCourses = async (query) => {
       mode: "insensitive"
     };
   }
-  if (status2) {
-    whereCondition.status = status2;
+  if (status3) {
+    whereCondition.status = status3;
   }
   const data = await prisma.course.findMany({
     where: whereCondition,
@@ -1185,6 +1194,7 @@ app.get("/", (req, res) => {
   });
 });
 app.use(globalErrorHandler);
+app.use(notFound);
 var app_default = app;
 
 // src/server.ts
