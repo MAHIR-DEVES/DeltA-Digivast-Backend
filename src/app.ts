@@ -1,6 +1,6 @@
 import express, { Application, Request, Response } from 'express';
 import { globalErrorHandler } from './app/middleware/golbelErrorHandler';
-// import { notFound } from './app/middleware/notFound';
+import { notFound } from './app/middleware/notFound';
 import cors from 'cors';
 import router from './app/routes';
 
@@ -26,6 +26,6 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use(globalErrorHandler);
-// app.use(notFound);
+app.use(notFound);
 
 export default app;
