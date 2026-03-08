@@ -1183,7 +1183,7 @@ app.use(express8.urlencoded({ extended: true }));
 app.use(express8.json());
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "https://deltadigivast.vercel.app"],
     credentials: true
   })
 );
