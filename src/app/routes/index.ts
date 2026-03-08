@@ -19,4 +19,4 @@ router.use('/courses', CourseRoutes);
 router.use('/attendance', AttendanceRoutes);
 router.use('/stats', StatsRoutes);
 
-export const IndexRoutes = router;
+export default router;

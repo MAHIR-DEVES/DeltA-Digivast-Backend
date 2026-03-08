@@ -1,8 +1,8 @@
 import express, { Application, Request, Response } from 'express';
-import { IndexRoutes } from './app/routes';
 import { globalErrorHandler } from './app/middleware/golbelErrorHandler';
 import { notFound } from './app/middleware/notFound';
 import cors from 'cors';
+import router from './app/routes';
 
 const app: Application = express();
 
@@ -16,7 +16,7 @@ app.use(
   }),
 );
 
-app.use('/api/v1', IndexRoutes);
+app.use('/api/v1', router);
 
 // Basic route
 app.get('/', (req: Request, res: Response) => {
