@@ -5,6 +5,7 @@ model Lead {
   phone     String?
   from      String
   company   String?
+  isViewed  Boolean  @default(false)
   date      DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

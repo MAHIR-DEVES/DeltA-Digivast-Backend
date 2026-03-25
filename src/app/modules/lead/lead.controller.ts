@@ -32,6 +32,16 @@ const getSingleLead = async (req: Request, res: Response) => {
   });
 };
 
+const markAsViewed = async (req: Request, res: Response) => {
+  const result = await LeadService.markAsViewed(req.params.id as string);
+
+  res.status(200).json({
+    success: true,
+    message: 'Lead marked as viewed',
+    data: result,
+  });
+};
+
 const deleteLead = async (req: Request, res: Response) => {
   await LeadService.deleteLead(req.params.id as string);
 
@@ -46,4 +56,5 @@ export const LeadController = {
   getAllLeads,
   getSingleLead,
   deleteLead,
+  markAsViewed,
 };

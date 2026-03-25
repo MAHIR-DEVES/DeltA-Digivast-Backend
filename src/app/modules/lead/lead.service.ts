@@ -45,6 +45,13 @@ const getSingleLead = async (id: string) => {
   });
 };
 
+const markAsViewed = async (id: string) => {
+  return await prisma.lead.update({
+    where: { id },
+    data: { isViewed: true },
+  });
+};
+
 const deleteLead = async (id: string) => {
   return await prisma.lead.delete({
     where: { id },
@@ -56,4 +63,5 @@ export const LeadService = {
   getAllLeads,
   getSingleLead,
   deleteLead,
+  markAsViewed,
 };

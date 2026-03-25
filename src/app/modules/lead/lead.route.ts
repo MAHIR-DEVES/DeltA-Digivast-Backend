@@ -10,6 +10,7 @@ router.post('/', LeadController.createLead);
 // Admin Only
 router.get('/', auth('ADMIN'), LeadController.getAllLeads);
 router.get('/:id', auth('ADMIN'), LeadController.getSingleLead);
+router.patch('/:id/view', auth('ADMIN'), LeadController.markAsViewed);
 router.delete('/:id', auth('ADMIN'), LeadController.deleteLead);
 
 export const LeadRoutes = router;
