@@ -15,10 +15,15 @@ interface IRegisterUser {
   skills?: string;
   experience?: number;
   department?: string;
+  joiningDate?: Date;
 }
 
 const registerUser = async (payload: IRegisterUser) => {
   const hashedPassword = await bcrypt.hash(payload.password, 10);
+
+  if (payload.joiningDate) {
+    payload.joiningDate = new Date(payload.joiningDate);
+  }
 
   const user = await prisma.user.create({
     data: {
@@ -36,6 +41,7 @@ const registerUser = async (payload: IRegisterUser) => {
       skills: true,
       experience: true,
       department: true,
+      joiningDate: true,
       status: true,
       createdAt: true,
       updatedAt: true,
@@ -113,6 +119,10 @@ const updateUser = async (
     payload.password = await bcrypt.hash(payload.password, 10);
   }
 
+  if (payload.joiningDate) {
+    payload.joiningDate = new Date(payload.joiningDate);
+  }
+
   return await prisma.user.update({
     where: { id },
     data: payload,
@@ -128,6 +138,7 @@ const updateUser = async (
       experience: true,
       department: true,
       status: true,
+      joiningDate: true,
       createdAt: true,
       updatedAt: true,
       lastLogin: true,

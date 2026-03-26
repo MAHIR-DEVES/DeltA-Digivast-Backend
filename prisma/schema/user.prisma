@@ -18,6 +18,7 @@ model User {
 
   // Tracking fields
   status      STATUS     @default(ACTIVE) // ACTIVE, INACTIVE, ON_LEAVE
+  joiningDate DateTime @default(now())
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   lastLogin   DateTime?   // track employee last login
