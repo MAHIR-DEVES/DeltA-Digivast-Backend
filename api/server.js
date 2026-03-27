@@ -160,6 +160,7 @@ var registerUser = async (payload) => {
       experience: true,
       department: true,
       joiningDate: true,
+      salary: true,
       status: true,
       createdAt: true,
       updatedAt: true,
@@ -245,6 +246,34 @@ var updateUser = async (id, payload) => {
     }
   });
 };
+var updatePassword = async (id, oldPassword, newPassword) => {
+  const user = await prisma.user.findUnique({ where: { id } });
+  if (!user) throw new Error("User not found");
+  const isMatch = await bcrypt.compare(oldPassword, user.password);
+  if (!isMatch) throw new Error("Old password is incorrect");
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  return await prisma.user.update({
+    where: { id },
+    data: { password: hashedPassword },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      photoUrl: true,
+      role: true,
+      designation: true,
+      skills: true,
+      experience: true,
+      department: true,
+      status: true,
+      joiningDate: true,
+      createdAt: true,
+      updatedAt: true,
+      lastLogin: true
+    }
+  });
+};
 var deleteUser = async (id) => {
   const user = await prisma.user.delete({
     where: { id }
@@ -257,7 +286,8 @@ var UseService = {
   getAllUsers,
   loginUser,
   getSingleUser,
-  updateUser
+  updateUser,
+  updatePassword
 };
 
 // src/app/shared/catchAsync.ts
@@ -331,6 +361,21 @@ var updateUser2 = catchAsync(async (req, res) => {
     data: result
   });
 });
+var changePassword = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const { oldPassword, newPassword } = req.body;
+  const result = await UseService.updatePassword(
+    id,
+    oldPassword,
+    newPassword
+  );
+  sendResponse(res, {
+    httpStatusCode: 200,
+    success: true,
+    message: "Password updated successfully",
+    data: result
+  });
+});
 var deleteUser2 = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await UseService.deleteUser(id);
@@ -347,7 +392,8 @@ var UserController = {
   deleteUser: deleteUser2,
   loginUser: loginUser2,
   getSingleUser: getSingleUser2,
-  updateUser: updateUser2
+  updateUser: updateUser2,
+  changePassword
 };
 
 // src/app/middleware/auth.ts
@@ -398,6 +444,11 @@ router.put(
   "/:id",
   auth(Role.EMPLOY, Role.ADMIN, Role.MANAGER),
   UserController.updateUser
+);
+router.put(
+  "/:id/password",
+  auth(Role.EMPLOY, Role.ADMIN, Role.MANAGER),
+  UserController.changePassword
 );
 router.delete("/:id", auth(Role.ADMIN), UserController.deleteUser);
 var UserRoute = router;

@@ -60,6 +60,24 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const changePassword = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { oldPassword, newPassword } = req.body;
+
+  const result = await UseService.updatePassword(
+    id as string,
+    oldPassword,
+    newPassword,
+  );
+
+  sendResponse(res, {
+    httpStatusCode: 200,
+    success: true,
+    message: 'Password updated successfully',
+    data: result,
+  });
+});
+
 const deleteUser = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await UseService.deleteUser(id as string);
@@ -78,4 +96,5 @@ export const UserController = {
   loginUser,
   getSingleUser,
   updateUser,
+  changePassword,
 };

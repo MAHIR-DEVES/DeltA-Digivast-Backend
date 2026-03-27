@@ -18,6 +18,11 @@ router.put(
   auth(Role.EMPLOY, Role.ADMIN, Role.MANAGER),
   UserController.updateUser,
 ); // Update user
+router.put(
+  '/:id/password',
+  auth(Role.EMPLOY, Role.ADMIN, Role.MANAGER),
+  UserController.changePassword,
+);
 router.delete('/:id', auth(Role.ADMIN), UserController.deleteUser);
 
 export const UserRoute = router;

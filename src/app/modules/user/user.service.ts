@@ -43,6 +43,7 @@ const registerUser = async (payload: IRegisterUser) => {
       experience: true,
       department: true,
       joiningDate: true,
+      salary: true,
       status: true,
       createdAt: true,
       updatedAt: true,
@@ -148,6 +149,45 @@ const updateUser = async (
   });
 };
 
+const updatePassword = async (
+  id: string,
+  oldPassword: string,
+  newPassword: string,
+): Promise<User> => {
+  const user = await prisma.user.findUnique({ where: { id } });
+  if (!user) throw new Error('User not found');
+
+  // 1. পুরনো password check
+  const isMatch = await bcrypt.compare(oldPassword, user.password);
+  if (!isMatch) throw new Error('Old password is incorrect');
+
+  // 2. নতুন password hash
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  // 3. password update
+  return await prisma.user.update({
+    where: { id },
+    data: { password: hashedPassword },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      photoUrl: true,
+      role: true,
+      designation: true,
+      skills: true,
+      experience: true,
+      department: true,
+      status: true,
+      joiningDate: true,
+      createdAt: true,
+      updatedAt: true,
+      lastLogin: true,
+    },
+  });
+};
+
 const deleteUser = async (id: string): Promise<User> => {
   const user = await prisma.user.delete({
     where: { id },
@@ -162,4 +202,5 @@ export const UseService = {
   loginUser,
   getSingleUser,
   updateUser,
+  updatePassword,
 };
