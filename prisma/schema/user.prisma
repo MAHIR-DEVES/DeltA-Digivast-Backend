@@ -15,6 +15,7 @@ model User {
   skills      String?     // comma separated or JSON string
   experience  Int?        // years of experience
   department  String?     // e.g., "Design", "Development"
+ salary      Float? 
 
   // Tracking fields
   status      STATUS     @default(ACTIVE) // ACTIVE, INACTIVE, ON_LEAVE

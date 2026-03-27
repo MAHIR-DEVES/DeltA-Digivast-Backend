@@ -15,6 +15,7 @@ interface IRegisterUser {
   skills?: string;
   experience?: number;
   department?: string;
+  salary?: number;
   joiningDate?: Date;
 }
 
@@ -87,6 +88,7 @@ const loginUser = async (payload: ILoginUser) => {
       experience: user.experience,
       department: user.department,
       status: user.status,
+      salary: user.salary,
     },
     envVars.JWT_SECRET,
     {
