@@ -32,6 +32,7 @@
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.19.0",
     "prisma": "^7.4.2",
+    "stripe": "^22.0.1",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0"
   },
@@ -40,6 +41,7 @@
     "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.19",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/stripe": "^8.0.417",
     "eslint": "^10.0.2",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",

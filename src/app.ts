@@ -3,11 +3,16 @@ import { globalErrorHandler } from './app/middleware/golbelErrorHandler';
 import { notFound } from './app/middleware/notFound';
 import cors from 'cors';
 import router from './app/routes';
+import { handleWebhook } from './app/modules/payment/payment.webhook';
 
 const app: Application = express();
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
+
+// Stripe webhook needs the raw body, so we use express.raw for that specific route
+app.post('/webhook', express.raw({ type: 'application/json' }), handleWebhook);
+
 app.use(express.json());
 app.use(
   cors({

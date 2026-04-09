@@ -7,6 +7,7 @@ import { LeadRoutes } from '../modules/lead/lead.route';
 import { CourseRoutes } from '../modules/course/course.route';
 import { AttendanceRoutes } from '../modules/attendance/attendance.route';
 import { StatsRoutes } from '../modules/stats/stats.route';
+import { paymentRoutes } from '../modules/payment/payment.route';
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use('/leads', LeadRoutes);
 router.use('/courses', CourseRoutes);
 router.use('/attendance', AttendanceRoutes);
 router.use('/stats', StatsRoutes);
+router.use('/payment', paymentRoutes);
 
 export default router;
