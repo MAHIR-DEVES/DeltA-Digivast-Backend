@@ -1337,7 +1337,11 @@ app.post("/webhook", express9.raw({ type: "application/json" }), handleWebhook);
 app.use(express9.json());
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://deltadigivast.vercel.app"],
+    origin: [
+      "http://localhost:3000",
+      "https://delt-a-digivast-frontend.vercel.app",
+      "https://deltadigivast.vercel.app"
+    ],
     credentials: true
   })
 );
