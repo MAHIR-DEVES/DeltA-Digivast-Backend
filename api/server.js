@@ -1254,7 +1254,7 @@ var createCheckoutSessionService = async (payload) => {
     payment_method_types: ["card"],
     mode: "payment",
     success_url: `${process.env.CLIENT_URL}/courses/${courseId}`,
-    cancel_url: `${process.env.CLIENT_URL}/cancel`,
+    cancel_url: `${process.env.CLIENT_URL}/courses/${courseId}`,
     line_items: [
       {
         price_data: {
