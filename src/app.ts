@@ -6,14 +6,7 @@ import router from './app/routes';
 import { handleWebhook } from './app/modules/payment/payment.webhook';
 
 const app: Application = express();
-
-// Middleware
-app.use(express.urlencoded({ extended: true }));
-
-// Stripe webhook needs the raw body, so we use express.raw for that specific route
-app.post('/webhook', express.raw({ type: 'application/json' }), handleWebhook);
-
-app.use(express.json());
+// FIRST: CORS
 app.use(
   cors({
     origin: [
@@ -22,11 +15,18 @@ app.use(
       'https://deltadigivast.vercel.app',
       'https://www.deltadigivast.com',
       'http://www.deltadigivast.com',
-  
     ],
     credentials: true,
   }),
 );
+
+// Middleware
+app.use(express.urlencoded({ extended: true }));
+
+// Stripe webhook needs the raw body, so we use express.raw for that specific route
+app.post('/webhook', express.raw({ type: 'application/json' }), handleWebhook);
+
+app.use(express.json());
 
 app.use('/api/v1', router);
 
