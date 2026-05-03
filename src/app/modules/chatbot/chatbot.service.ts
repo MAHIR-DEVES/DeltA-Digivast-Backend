@@ -55,31 +55,57 @@ const chat = async ({ messages, leadData }: IChatRequest) => {
   }));
 
   // ── 3. Send to Gemini ────────────────────────────────────────────────────
-  const model = getClient().getGenerativeModel({
-    model: 'gemini-1.5-flash',
-    systemInstruction: SYSTEM_PROMPT,
-  });
+  const attemptChat = async (modelName: string) => {
+    const model = getClient().getGenerativeModel({
+      model: modelName,
+    });
 
-  const chatSession = model.startChat({
-    history,
-    generationConfig: {
-      maxOutputTokens: 512,
-      temperature: 0.7,
-    },
-  });
+    const chatSession = model.startChat({
+      history: [
+        { role: 'user', parts: [{ text: SYSTEM_PROMPT }] },
+        {
+          role: 'model',
+          parts: [
+            {
+              text: 'I understand. I am the DeltA Digivast AI assistant. I will help visitors according to your instructions. How can I help you today?',
+            },
+          ],
+        },
+        ...history,
+      ],
+      generationConfig: {
+        maxOutputTokens: 512,
+        temperature: 0.7,
+      },
+    });
+
+    return await chatSession.sendMessage(lastMessage.content);
+  };
 
   let result;
   try {
-    result = await chatSession.sendMessage(lastMessage.content);
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    if (message.includes('429') || message.includes('quota')) {
+    // Try the newest 2.5 Flash model
+    result = await attemptChat('gemini-2.5-flash');
+  } catch (err: any) {
+    const message = err.message || '';
+    if (message.includes('404')) {
+      try {
+        // Fallback to the generic latest flash
+        result = await attemptChat('gemini-flash-latest');
+      } catch (fallbackErr: any) {
+        throw new Error(
+          `AI Model Error: ${fallbackErr.message || 'Models not found.'}`,
+        );
+      }
+    } else if (message.includes('429') || message.includes('quota')) {
       throw new Error(
-        'Our AI assistant is temporarily busy. Please try again in a moment or contact us directly at /contact.',
+        'Our AI assistant is temporarily busy (Quota exceeded). Please try again in a moment.',
       );
+    } else {
+      throw err;
     }
-    throw err;
   }
+
   const reply = result.response.text();
 
   // ── 4. Optionally save lead ──────────────────────────────────────────────
