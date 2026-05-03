@@ -7,22 +7,29 @@ import { handleWebhook } from './app/modules/payment/payment.webhook';
 
 const app: Application = express();
 // FIRST: CORS
-app.use(
-  cors({
-    origin: [
-      'http://localhost:3000',
-      'https://delt-a-digivast-frontend.vercel.app',
-      'https://deltadigivast.vercel.app',
-      'https://www.deltadigivast.com',
-    ],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  }),
-);
+const corsOptions = {
+  origin: [
+    'http://localhost:3000',
+    'https://delt-a-digivast-frontend.vercel.app',
+    'https://deltadigivast.vercel.app',
+    'https://www.deltadigivast.com',
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'Origin',
+    'X-Requested-With',
+    'Accept',
+  ],
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
 
 // Handle preflight requests
-app.options('*', cors());
+app.options('*', cors(corsOptions));
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
