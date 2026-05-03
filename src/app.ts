@@ -14,11 +14,15 @@ app.use(
       'https://delt-a-digivast-frontend.vercel.app',
       'https://deltadigivast.vercel.app',
       'https://www.deltadigivast.com',
-      'http://www.deltadigivast.com',
     ],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   }),
 );
+
+// Handle preflight requests
+app.options('*', cors());
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
