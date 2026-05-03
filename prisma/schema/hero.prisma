@@ -1,0 +1,8 @@
+model Hero {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  imageUrl    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

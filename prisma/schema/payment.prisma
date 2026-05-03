@@ -1,0 +1,10 @@
+model Payment {
+  id              String   @id @default(uuid())
+  userId          String
+  courseId        String
+  amount          Int
+  currency        String   @default("bdt")
+  status          String
+  stripeSessionId String
+  createdAt       DateTime @default(now())
+}

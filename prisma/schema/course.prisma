@@ -1,0 +1,15 @@
+
+
+model Course {
+  id          String        @id @default(uuid())
+  imageUrl    String
+  title       String
+  category    String
+  instructor  String
+  duration    String
+  price       Float
+  status      CourseStatus  @default(DRAFT)
+  description String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}

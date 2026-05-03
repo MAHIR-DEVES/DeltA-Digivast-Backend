@@ -1,0 +1,10 @@
+model Attendance {
+  id           String   @id @default(uuid())
+  employeeName String
+  employeeId   String
+  designation  String
+  checkIn      DateTime
+  checkOut     DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

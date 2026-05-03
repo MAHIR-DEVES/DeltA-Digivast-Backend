@@ -1,0 +1,12 @@
+model Lead {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  phone     String?
+  from      String
+  company   String?
+  isViewed  Boolean  @default(false)
+  date      DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
