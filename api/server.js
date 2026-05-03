@@ -1,5 +1,5 @@
 // src/app.ts
-import express9 from "express";
+import express10 from "express";
 
 // src/app/config/env.ts
 import dotenv from "dotenv";
@@ -1289,18 +1289,283 @@ var router9 = express8.Router();
 router9.post("/create-checkout-session", createCheckoutSession);
 var paymentRoutes = router9;
 
+// src/app/modules/chatbot/chatbot.route.ts
+import express9 from "express";
+
+// src/app/modules/chatbot/chatbot.service.ts
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+// src/app/modules/chatbot/chatbot.knowledge.ts
+var COMPANY_KNOWLEDGE = `
+## Company
+- Name: DeltA Digivast
+- Type: Digital agency \u2013 web development, design, and digital marketing
+- Location: Bangladesh (serves global clients)
+- Contact Page: /contact
+- Portfolio Page: /portfolio
+
+## Services & Pricing
+
+### 1. Business Website
+- Description: Professional multi-page website for businesses (Home, About, Services, Contact, Blog)
+- Starting price: $300 \u2013 $800
+- Delivery: 7 \u2013 14 business days
+- Technologies: Next.js, React, Tailwind CSS, Node.js
+- Best for: Small to medium businesses wanting a strong online presence
+
+### 2. E-Commerce Website
+- Description: Full online store with product management, cart, checkout, and payment gateway
+- Starting price: $600 \u2013 $2,000
+- Delivery: 14 \u2013 30 business days
+- Technologies: Next.js, Stripe, PostgreSQL, Prisma
+- Best for: Businesses wanting to sell products online
+
+### 3. Custom Web Application
+- Description: Fully custom web app with backend, database, authentication, and dashboard
+- Starting price: $1,000 \u2013 $5,000+
+- Delivery: 30 \u2013 60 business days
+- Technologies: React/Next.js, Node.js/Express, PostgreSQL, Prisma, REST API
+- Best for: Startups and businesses needing a bespoke software solution
+
+### 4. UI/UX Design
+- Description: User-centered interface design including wireframes, prototypes, and final design files
+- Starting price: $150 \u2013 $500
+- Delivery: 5 \u2013 10 business days
+- Tools: Figma
+- Best for: Teams that need design before development, or want a redesign
+
+### 5. SEO Optimization
+- Description: On-page SEO, speed optimization, structured data, sitemap, and Google Search Console setup
+- Starting price: $100 \u2013 $300 (one-time)
+- Delivery: 3 \u2013 7 business days
+- Best for: Websites that want to rank higher on Google
+
+### 6. Digital Marketing
+- Description: Social media management, content strategy, paid ads (Facebook/Google)
+- Starting price: $200/month
+- Best for: Businesses wanting to grow their online audience and generate leads
+
+### 7. Graphic Design
+- Description: Logo, brand identity, social media graphics, banners, flyers
+- Starting price: $50 \u2013 $300
+- Delivery: 2 \u2013 5 business days
+- Tools: Adobe Illustrator, Photoshop, Figma
+
+## Packages
+
+### Starter Package (~$350)
+- Business website (up to 5 pages)
+- Basic SEO setup
+- Mobile responsive
+- Contact form
+- Delivery: 10 days
+
+### Business Package (~$900)
+- Professional website (up to 10 pages)
+- UI/UX design included
+- On-page SEO
+- Blog/CMS
+- 1 month post-launch support
+- Delivery: 20 days
+
+### Enterprise Package (Custom pricing)
+- Full custom web application or e-commerce
+- Custom design system
+- Admin dashboard
+- API integrations
+- 3 months post-launch support
+- Delivery: 45\u201360 days
+
+## Technology Stack
+- Frontend: Next.js, React, TypeScript, Tailwind CSS
+- Backend: Node.js, Express, TypeScript
+- Database: PostgreSQL, Prisma ORM
+- Payments: Stripe
+- Deployment: Vercel (frontend), Railway/Neon (backend/DB)
+- Design: Figma
+
+## Workflow (How a Project is Delivered)
+1. Discovery call / requirement gathering
+2. Proposal & quote sent within 24 hours
+3. Design phase (wireframes \u2192 approval)
+4. Development phase
+5. Testing & review
+6. Launch
+7. Post-launch support
+
+## FAQ
+Q: How much does a website cost?
+A: Prices start from $300 for a basic business website. E-commerce starts at $600, and custom apps from $1,000. The exact price depends on your requirements. Share your needs and we'll send a free custom quote!
+
+Q: How long does it take to build a website?
+A: A standard business website takes 7\u201314 days. E-commerce projects take 14\u201330 days. Complex custom apps take 30\u201360 days. We always give you a clear timeline before starting.
+
+Q: What technologies do you use?
+A: We mainly use Next.js, React, TypeScript, Node.js, PostgreSQL, and Prisma. We deploy on Vercel and use Stripe for payments.
+
+Q: Do you provide post-launch support?
+A: Yes! All packages include at least 1 month of post-launch support. The Enterprise package includes 3 months. Extended support plans are also available.
+
+Q: Can I see examples of your work?
+A: Absolutely! Visit our Portfolio page at /portfolio to see past projects.
+
+Q: Do you work with international clients?
+A: Yes, we work with clients worldwide. Communication is in English, and payments are accepted internationally.
+
+Q: Can you redesign my existing website?
+A: Yes! We offer redesign services. Share your current site and we'll suggest improvements.
+
+Q: What if I don't know exactly what I need?
+A: No problem! Contact us and we'll schedule a free discovery call to understand your goals and recommend the best solution.
+
+Q: How do I get started?
+A: Simply go to our Contact page at /contact, fill in your details, or chat with me and share your project idea. We'll get back to you within 24 hours.
+
+Q: Do you offer payment plans?
+A: Yes, for projects above $500 we offer a 50% deposit upfront and 50% on delivery.
+`;
+var SYSTEM_PROMPT = `
+You are the AI assistant for DeltA Digivast, a professional digital agency.
+Your role is to help website visitors by:
+1. Answering questions about DeltA Digivast's services, pricing, and workflow
+2. Recommending the most suitable package based on the visitor's needs
+3. Guiding interested visitors toward contacting the team for a custom quote
+
+## Your Knowledge Base
+${COMPANY_KNOWLEDGE}
+
+## Behavior Rules
+- Be friendly, helpful, and professional at all times
+- Keep answers concise (2\u20134 sentences max unless a detailed list is needed)
+- Only answer questions related to DeltA Digivast or digital services
+- If a visitor describes their project needs, identify which service or package fits best and explain why
+- Always mention that prices are starting prices and vary by project scope
+- When a visitor shows clear buying intent (e.g., "I want to hire you", "how do I start", "I need a quote"), ask for their name and email so the team can follow up
+- If you are unsure about something specific, suggest the visitor contact the team directly via the Contact page (/contact)
+- Do NOT make up prices, timelines, or services not listed in your knowledge base
+- Do NOT discuss topics unrelated to digital services, web development, or the agency
+- When recommending a package, briefly explain why it fits the user's described needs
+- End responses that involve next steps with a clear call to action (e.g., "Ready to get started? Share your email and we'll send a free quote!")
+- Use markdown formatting: **bold** for package names and prices, bullet lists for features
+- Always be encouraging and solution-focused
+`.trim();
+
+// src/app/modules/chatbot/chatbot.service.ts
+var genAI = null;
+var getClient = () => {
+  if (!genAI) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) throw new Error("GEMINI_API_KEY is not set in environment variables");
+    genAI = new GoogleGenerativeAI(apiKey);
+  }
+  return genAI;
+};
+var chat = async ({ messages, leadData }) => {
+  if (!messages || messages.length === 0) {
+    throw new Error("messages array cannot be empty");
+  }
+  const lastMessage = messages[messages.length - 1];
+  if (lastMessage.role !== "user") {
+    throw new Error('The last message must have role "user"');
+  }
+  const history = messages.slice(0, -1).map((m) => ({
+    role: m.role,
+    parts: [{ text: m.content }]
+  }));
+  const attemptChat = async (modelName) => {
+    const model = getClient().getGenerativeModel({
+      model: modelName
+    });
+    const chatSession = model.startChat({
+      history: [
+        { role: "user", parts: [{ text: SYSTEM_PROMPT }] },
+        {
+          role: "model",
+          parts: [
+            {
+              text: "I understand. I am the DeltA Digivast AI assistant. I will help visitors according to your instructions. How can I help you today?"
+            }
+          ]
+        },
+        ...history
+      ],
+      generationConfig: {
+        maxOutputTokens: 512,
+        temperature: 0.7
+      }
+    });
+    return await chatSession.sendMessage(lastMessage.content);
+  };
+  let result;
+  try {
+    result = await attemptChat("gemini-2.5-flash");
+  } catch (err) {
+    const message = err.message || "";
+    if (message.includes("404")) {
+      try {
+        result = await attemptChat("gemini-flash-latest");
+      } catch (fallbackErr) {
+        throw new Error(
+          `AI Model Error: ${fallbackErr.message || "Models not found."}`
+        );
+      }
+    } else if (message.includes("429") || message.includes("quota")) {
+      throw new Error(
+        "Our AI assistant is temporarily busy (Quota exceeded). Please try again in a moment."
+      );
+    } else {
+      throw err;
+    }
+  }
+  const reply = result.response.text();
+  let leadSaved = false;
+  if (leadData?.email && leadData?.name) {
+    await prisma.lead.create({
+      data: {
+        name: leadData.name,
+        email: leadData.email,
+        from: "chatbot",
+        company: leadData.message ?? void 0,
+        date: /* @__PURE__ */ new Date()
+      }
+    });
+    leadSaved = true;
+  }
+  return { reply, leadSaved };
+};
+var ChatbotService = { chat };
+
+// src/app/modules/chatbot/chatbot.controller.ts
+var chat2 = catchAsync(async (req, res) => {
+  const { messages, leadData } = req.body;
+  const result = await ChatbotService.chat({ messages, leadData });
+  sendResponse(res, {
+    httpStatusCode: 200,
+    success: true,
+    message: "Chatbot reply generated successfully",
+    data: result
+  });
+});
+var ChatbotController = { chat: chat2 };
+
+// src/app/modules/chatbot/chatbot.route.ts
+var router10 = express9.Router();
+router10.post("/chat", ChatbotController.chat);
+var ChatbotRoutes = router10;
+
 // src/app/routes/index.ts
-var router10 = Router2();
-router10.use("/users", UserRoute);
-router10.use("/blogs", BlogRoutes);
-router10.use("/hero", HeroRoutes);
-router10.use("/portfolio", PortfolioRoutes);
-router10.use("/leads", LeadRoutes);
-router10.use("/courses", CourseRoutes);
-router10.use("/attendance", AttendanceRoutes);
-router10.use("/stats", StatsRoutes);
-router10.use("/payment", paymentRoutes);
-var routes_default = router10;
+var router11 = Router2();
+router11.use("/users", UserRoute);
+router11.use("/blogs", BlogRoutes);
+router11.use("/hero", HeroRoutes);
+router11.use("/portfolio", PortfolioRoutes);
+router11.use("/leads", LeadRoutes);
+router11.use("/courses", CourseRoutes);
+router11.use("/attendance", AttendanceRoutes);
+router11.use("/stats", StatsRoutes);
+router11.use("/payment", paymentRoutes);
+router11.use("/chatbot", ChatbotRoutes);
+var routes_default = router11;
 
 // src/app/modules/payment/payment.webhook.ts
 import Stripe2 from "stripe";
@@ -1331,20 +1596,29 @@ var handleWebhook = async (req, res) => {
 };
 
 // src/app.ts
-var app = express9();
-app.use(express9.urlencoded({ extended: true }));
-app.post("/webhook", express9.raw({ type: "application/json" }), handleWebhook);
-app.use(express9.json());
-app.use(
-  cors({
-    origin: [
-      "http://localhost:3000",
-      "https://delt-a-digivast-frontend.vercel.app",
-      "https://deltadigivast.vercel.app"
-    ],
-    credentials: true
-  })
-);
+var app = express10();
+var corsOptions = {
+  origin: [
+    "http://localhost:3000",
+    "https://delt-a-digivast-frontend.vercel.app",
+    "https://deltadigivast.vercel.app",
+    "https://www.deltadigivast.com"
+  ],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "Origin",
+    "X-Requested-With",
+    "Accept"
+  ],
+  optionsSuccessStatus: 204
+};
+app.use(cors(corsOptions));
+app.use(express10.urlencoded({ extended: true }));
+app.post("/webhook", express10.raw({ type: "application/json" }), handleWebhook);
+app.use(express10.json());
 app.use("/api/v1", routes_default);
 app.get("/", (req, res) => {
   res.status(200).json({
