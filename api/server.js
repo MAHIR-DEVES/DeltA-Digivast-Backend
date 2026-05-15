@@ -682,24 +682,22 @@ var createPortfolio = async (payload) => {
   });
 };
 var getAllPortfolio = async (query) => {
-  const { page = 1, limit = 10, category } = query;
-  const skip = (Number(page) - 1) * Number(limit);
-  const whereCondition = category ? { category: { equals: category, mode: "insensitive" } } : {};
+  const { category } = query;
+  const whereCondition = category ? {
+    category: {
+      equals: category,
+      mode: "insensitive"
+    }
+  } : void 0;
   const data = await prisma.portfolio.findMany({
     where: whereCondition,
-    skip,
-    take: Number(limit),
     orderBy: { createdAt: "desc" }
   });
   const total = await prisma.portfolio.count({
     where: whereCondition
   });
   return {
-    meta: {
-      page: Number(page),
-      limit: Number(limit),
-      total
-    },
+    total,
     data
   };
 };

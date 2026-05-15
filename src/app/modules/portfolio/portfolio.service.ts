@@ -17,18 +17,19 @@ const createPortfolio = async (payload: IPortfolioData) => {
 };
 
 const getAllPortfolio = async (query: any) => {
-  const { page = 1, limit = 10, category } = query;
-
-  const skip = (Number(page) - 1) * Number(limit);
+  const { category } = query;
 
   const whereCondition = category
-    ? { category: { equals: category, mode: 'insensitive' } }
-    : {};
+    ? {
+        category: {
+          equals: category,
+          mode: 'insensitive' as const,
+        },
+      }
+    : undefined;
 
   const data = await prisma.portfolio.findMany({
     where: whereCondition,
-    skip,
-    take: Number(limit),
     orderBy: { createdAt: 'desc' },
   });
 
@@ -37,11 +38,7 @@ const getAllPortfolio = async (query: any) => {
   });
 
   return {
-    meta: {
-      page: Number(page),
-      limit: Number(limit),
-      total,
-    },
+    total,
     data,
   };
 };
